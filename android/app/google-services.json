@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "493471932326",
+    "project_id": "mis3-da4d2",
+    "storage_bucket": "mis3-da4d2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493471932326:android:3e28623d6b203350dbf967",
+        "android_client_info": {
+          "package_name": "com.example.mis3"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAF6y_UD13lpsR9YMbsDcf-HAi1tHHZNIY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
