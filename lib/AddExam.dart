@@ -75,7 +75,7 @@ class _AddExamState extends State<AddExam> {
                 );
 
                 if(selectedTime != null){
-                  String formattedTime = '${selectedTime.hour}:${selectedTime.minute}';
+                  String formattedTime = '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}';
                   timeController.text = formattedTime;
                 }
               },

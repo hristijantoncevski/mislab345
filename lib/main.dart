@@ -5,7 +5,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:mis3/AddExam.dart';
 import 'package:mis3/login.dart';
 import 'package:mis3/exam.dart';
+import 'package:mis3/notification.dart';
 import 'package:mis3/register.dart';
+import 'package:mis3/calendar.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -42,7 +44,16 @@ class ExamListScreen extends StatefulWidget {
 }
 
 class _ExamListScreenState extends State<ExamListScreen> {
+  late final Notifications notifications;
   List<Exam> exams = [];
+
+  @override
+  void initState() {
+    notifications = Notifications();
+    notifications.initializeNotifications();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +68,17 @@ class _ExamListScreenState extends State<ExamListScreen> {
               context,
               MaterialPageRoute(builder: (context) => const Login()),
             )
+          ),
+          IconButton(
+            onPressed: () => FirebaseAuth.instance.currentUser != null ? {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => CalendarScreen(exams: exams))
+              )
+            } : Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Login()),
+            ),
+            icon: const Icon(Icons.calendar_today),
           ),
           IconButton(
             onPressed: () {
@@ -149,6 +171,9 @@ class _ExamListScreenState extends State<ExamListScreen> {
     setState(() {
       exams.add(newExam);
     });
+
+    notifications.show(id: newExam.id, title: "New exam", body: "A new exam for ${newExam.subject}, on date ${newExam.date} at ${newExam.time}");
+    notifications.scheduleNotification(id: newExam.id, title: "Upcoming exam", body: "Your exam for ${newExam.subject} is in 1 hour. Good luck", date: newExam.date, time: newExam.time);
   }
 
 }
