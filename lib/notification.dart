@@ -17,7 +17,7 @@ class Notifications {
   }
 
   Future<NotificationDetails> notificationDetails() async {
-    const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails('channelId', 'channelName', channelDescription: 'description', importance: Importance.max, priority: Priority.max);
+    const AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails('channelId', 'channelName', channelDescription: 'description', importance: Importance.max, priority: Priority.max, playSound: false);
 
     return const NotificationDetails(android: androidNotificationDetails);
   }

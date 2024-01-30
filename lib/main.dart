@@ -2,13 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:mis3/AddExam.dart';
 import 'package:mis3/login.dart';
 import 'package:mis3/exam.dart';
+import 'package:mis3/map.dart';
 import 'package:mis3/notification.dart';
 import 'package:mis3/register.dart';
 import 'package:mis3/calendar.dart';
 import 'firebase_options.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,6 +64,17 @@ class _ExamListScreenState extends State<ExamListScreen> {
       appBar: AppBar(
         title: const Text('Exam Dates'),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.map),
+            onPressed: () => FirebaseAuth.instance.currentUser != null ? {
+              Navigator.push(context,
+                MaterialPageRoute(builder: (context) => MapScreen(exams: exams, allowAddMarkers: false))
+              )
+            } : Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const Login()),
+            )
+          ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: () => FirebaseAuth.instance.currentUser != null ? _addExam(context)
@@ -168,12 +182,24 @@ class _ExamListScreenState extends State<ExamListScreen> {
   }
 
   void addNewExamToList(Exam newExam){
+    int count = 0;
+    for(Exam exam in exams){
+      double distanceInMeters = Geolocator.distanceBetween(exam.location.latitude,exam.location.longitude,newExam.location.latitude,newExam.location.longitude);
+      if(distanceInMeters<300.0){
+        count++;
+      }
+    }
+
+    if(count == 0){
+      notifications.show(id: newExam.id, title: "New exam at a new location for subject ${newExam.subject}", body: "Date ${newExam.date} at ${newExam.time}; Location: ${newExam.location.latitude}, ${newExam.location.longitude}");
+    } else {
+      notifications.show(id: newExam.id, title: "New exam for subject ${newExam.subject}", body: "You have $count exams in this area; Date ${newExam.date} at ${newExam.time}");
+    }
+
     setState(() {
       exams.add(newExam);
     });
 
-    notifications.show(id: newExam.id, title: "New exam", body: "A new exam for ${newExam.subject}, on date ${newExam.date} at ${newExam.time}");
     notifications.scheduleNotification(id: newExam.id, title: "Upcoming exam", body: "Your exam for ${newExam.subject} is in 1 hour. Good luck", date: newExam.date, time: newExam.time);
   }
-
 }

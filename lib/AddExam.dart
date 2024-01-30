@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mis3/location.dart';
 import 'package:mis3/main.dart';
 import 'package:mis3/exam.dart';
+import 'package:mis3/map.dart';
 
 class AddExam extends StatefulWidget {
   final Function(Exam) onAdd;
@@ -17,6 +19,8 @@ class _AddExamState extends State<AddExam> {
   late TextEditingController dateController;
   late TextEditingController timeController;
   late String validate;
+  late double newLatitude;
+  late double newLongitude;
 
   @override
   void initState() {
@@ -25,6 +29,8 @@ class _AddExamState extends State<AddExam> {
     dateController = TextEditingController();
     timeController = TextEditingController();
     validate = '';
+    newLatitude = 0.0;
+    newLongitude = 0.0;
   }
 
   @override
@@ -80,6 +86,28 @@ class _AddExamState extends State<AddExam> {
                 }
               },
             ),
+            ElevatedButton(
+              onPressed: () async {
+                final selectedLocation = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MapScreen(exams: const [], allowAddMarkers: true,
+                      onLocationSelected: (double latitude, double longitude) {
+                        setState(() {
+                          newLatitude = latitude;
+                          newLongitude = longitude;
+                        });
+                      },
+                    ),
+                  ),
+                );
+
+                if(selectedLocation != null) {
+                  newLatitude = selectedLocation['latitude'];
+                  newLongitude = selectedLocation['longitude'];
+                }
+              },
+              child: const Text('Select Location'),
+            ),
             const SizedBox(height: 8),
             if(validate.isNotEmpty)
               Text(
@@ -94,6 +122,7 @@ class _AddExamState extends State<AddExam> {
                       subject: subjectController.text,
                       date: dateController.text,
                       time: timeController.text,
+                      location: Location(latitude: newLatitude, longitude: newLongitude)
                     ),
                   );
                   Navigator.pop(context);
